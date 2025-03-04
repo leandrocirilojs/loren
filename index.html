@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Controle de Vendas e Estoque</title>
+  <link rel="stylesheet" href="style.css">
+
+      
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">VendaFácil</div>
+        <div class="nav-links">
+          <a class="nav-link active" data-module="dashboard">Dashboard</a>
+          <a class="nav-link" data-module="produtos">Produtos</a>
+          <a class="nav-link" data-module="vendas">Vendas</a>
+          <a class="nav-link" data-module="relatorios">Relatórios</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div id="module-container">
+        <!-- Dashboard Module -->
+        <div id="dashboard" class="active">
+          <h2>Dashboard</h2>
+          <div class="grid">
+            <div class="dashboard-card">
+              <h3>Total de Vendas (Hoje)</h3>
+              <div class="dashboard-value" id="vendas-hoje">R$ 0,00</div>
+            </div>
+            <div class="dashboard-card">
+              <h3>Vendas (Mês)</h3>
+              <div class="dashboard-value" id="vendas-mes">R$ 0,00</div>
+            </div>
+            <div class="dashboard-card">
+              <h3>Produtos</h3>
+              <div class="dashboard-value" id="total-produtos">0</div>
+            </div>
+            <div class="dashboard-card">
+              <h3>Estoque Total</h3>
+              <div class="dashboard-value" id="estoque-total">0</div>
+            </div>
+          </div>
+
+          <div class="card mt-4">
+            <h3>Produtos com Estoque Baixo</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Produto</th>
+                  <th>Estoque Atual</th>
+                  <th>Estoque Mínimo</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="low-stock-table">
+                <!-- Produtos com estoque baixo serão adicionados aqui -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h3>Últimas Vendas</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Produto</th>
+                  <th>Quantidade</th>
+                  <th>Valor Total</th>
+                </tr>
+              </thead>
+              <tbody id="ultimas-vendas">
+                <!-- Últimas vendas serão adicionadas aqui -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Produtos Module -->
+        <div id="produtos">
+          <div class="flex-between mb-1">
+            <h2>Gerenciamento de Produtos</h2>
+            <button id="btn-novo-produto">Novo Produto</button>
+          </div>
+
+          <div id="form-produto" class="card" style="display: none;">
+            <h3 id="form-title">Adicionar Produto</h3>
+            <form id="produto-form">
+              <input type="hidden" id="produto-id">
+              <div class="form-group">
+                <label for="nome">Nome do Produto</label>
+                <input type="text" id="nome" required>
+              </div>
+              <div class="form-group">
+                <label for="descricao">Descrição</label>
+                <input type="text" id="descricao">
+              </div>
+              <div class="flex">
+                <div class="form-group" style="flex: 1;">
+                  <label for="preco">Preço (R$)</label>
+                  <input type="number" id="preco" min="0" step="0.01" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                  <label for="estoque">Estoque Atual</label>
+                  <input type="number" id="estoque" min="0" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                  <label for="estoque-minimo">Estoque Mínimo</label>
+                  <input type="number" id="estoque-minimo" min="0" required>
+                </div>
+              </div>
+              <div class="flex">
+                <button type="submit">Salvar</button>
+                <button type="button" id="btn-cancelar-produto" class="btn-danger">Cancelar</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="search-bar">
+              <input type="text" id="busca-produto" placeholder="Buscar produtos...">
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Descrição</th>
+                  <th>Preço</th>
+                  <th>Estoque</th>
+                  <th>Estoque Mínimo</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="produtos-table">
+                <!-- Produtos serão adicionados aqui -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Vendas Module -->
+        <div id="vendas">
+          <h2>Registro de Vendas</h2>
+          <div class="card">
+            <form id="venda-form">
+              <div class="form-group">
+                <label for="produto-venda">Produto</label>
+                <select id="produto-venda" required>
+                  <option value="">Selecione um produto</option>
+                  <!-- Produtos serão adicionados aqui -->
+                </select>
+              </div>
+              <div class="flex">
+                <div class="form-group" style="flex: 1;">
+                  <label for="quantidade-venda">Quantidade</label>
+                  <input type="number" id="quantidade-venda" min="1" value="1" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                  <label for="preco-venda">Preço Unitário (R$)</label>
+                  <input type="number" id="preco-venda" min="0" step="0.01" readonly>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                  <label for="total-venda">Total (R$)</label>
+                  <input type="number" id="total-venda" min="0" step="0.01" readonly>
+                </div>
+              </div>
+              <div id="estoque-disponivel-info"></div>
+              <button type="submit">Registrar Venda</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3>Histórico de Vendas</h3>
+            <div class="search-bar">
+              <input type="text" id="busca-venda" placeholder="Buscar vendas...">
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Produto</th>
+                  <th>Quantidade</th>
+                  <th>Valor Unitário</th>
+                  <th>Valor Total</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="vendas-table">
+                <!-- Vendas serão adicionadas aqui -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Relatórios Module -->
+        <div id="relatorios">
+          <h2>Relatórios</h2>
+          <div class="card">
+            <div class="tabs">
+              <div class="tab active" data-tab="vendas-periodo">Vendas por Período</div>
+              <div class="tab" data-tab="produtos-vendidos">Produtos Mais Vendidos</div>
+              <div class="tab" data-tab="estoque-atual">Posição de Estoque</div>
+            </div>
+            
+            <!-- Relatório: Vendas por Período -->
+            <div id="vendas-periodo" class="tab-content active">
+              <div class="flex">
+                <div class="form-group" style="flex: 1;">
+                  <label for="data-inicio">Data Inicial</label>
+                  <input type="date" id="data-inicio">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                  <label for="data-fim">Data Final</label>
+                  <input type="date" id="data-fim">
+                </div>
+                <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
+                  <button id="btn-gerar-relatorio-periodo">Gerar Relatório</button>
+                </div>
+              </div>
+              
+              <div id="relatorio-vendas-periodo-resultado">
+                <div class="dashboard-card">
+                  <h3>Total de Vendas no Período</h3>
+                  <div class="dashboard-value" id="total-vendas-periodo">R$ 0,00</div>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Produto</th>
+                      <th>Quantidade</th>
+                      <th>Valor Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="relatorio-vendas-periodo-table">
+                    <!-- Dados do relatório serão adicionados aqui -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <!-- Relatório: Produtos Mais Vendidos -->
+            <div id="produtos-vendidos" class="tab-content">
+              <div class="flex">
+                <div class="form-group" style="flex: 1;">
+                  <label for="data-inicio-produtos">Data Inicial</label>
+                  <input type="date" id="data-inicio-produtos">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                  <label for="data-fim-produtos">Data Final</label>
+                  <input type="date" id="data-fim-produtos">
+                </div>
+                <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
+                  <button id="btn-gerar-relatorio-produtos">Gerar Relatório</button>
+                </div>
+              </div>
+              
+              <table>
+                <thead>
+                  <tr>
+                    <th>Produto</th>
+                    <th>Quantidade Vendida</th>
+                    <th>Valor Total</th>
+                  </tr>
+                </thead>
+                <tbody id="relatorio-produtos-vendidos-table">
+                  <!-- Dados do relatório serão adicionados aqui -->
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Relatório: Posição de Estoque -->
+            <div id="estoque-atual" class="tab-content">
+              <button id="btn-gerar-relatorio-estoque" class="mb-1">Atualizar Dados</button>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Produto</th>
+                    <th>Estoque Atual</th>
+                    <th>Estoque Mínimo</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="relatorio-estoque-table">
+                  <!-- Dados do relatório serão adicionados aqui -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+  const menuIcon = document.getElementById('menu-icon');
+  const navLinks = document.getElementById('nav-links');
+
+  menuIcon.addEventListener('click', function () {
+    navLinks.classList.toggle('active');
+  });
+});
+  </script>
+<script src="script.js"></script>
+      
+</body>
+  </html>
