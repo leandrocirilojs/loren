@@ -571,41 +571,42 @@ document.getElementById('btn-exportar-vendas-csv').addEventListener('click', () 
 
 //pdf
 
-function exportarParaPDF(elementId, nomeArquivo, orientation = 'p') {
-  const element = document.getElementById(elementId);
+function gerarRelatorioPDF(dados, cabecalho, titulo, nomeArquivo) {
+  const pdf = new jspdf.jsPDF('p', 'mm', 'a4'); // Cria um novo PDF no formato A4
 
-  // Verifica se o elemento existe
-  if (!element) {
-    console.error('Elemento não encontrado. Verifique o ID fornecido.');
-    alert('Elemento não encontrado. Verifique o ID fornecido.');
-    return;
-  }
+  // Adiciona o título ao PDF
+  pdf.setFontSize(18);
+  pdf.text(titulo, 10, 20);
 
-  // Garante que o nome do arquivo termine com .pdf
-  if (!nomeArquivo.endsWith('.pdf')) {
-    nomeArquivo += '.pdf';
-  }
-
-  // Configurações do html2canvas
-  html2canvas(element, {
-    scale: 2,
-    logging: true,
-    useCORS: true,
-  }).then((canvas) => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jspdf.jsPDF(orientation, 'mm', 'a4');
-
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    // Adiciona a imagem ao PDF
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-    // Salva o PDF
-    pdf.save(nomeArquivo);
-  }).catch((error) => {
-    console.error('Erro ao gerar PDF:', error);
-    alert('Ocorreu um erro ao gerar o PDF. Verifique o console para mais detalhes.');
+  // Adiciona a tabela ao PDF
+  pdf.setFontSize(12);
+  pdf.autoTable({
+    head: [cabecalho], // Cabeçalho da tabela
+    body: dados, // Dados da tabela
+    startY: 30, // Posição inicial da tabela
+    theme: 'striped', // Estilo da tabela
+    styles: {
+      fontSize: 10, // Tamanho da fonte
+      cellPadding: 3, // Espaçamento interno das células
+    },
   });
+
+  // Salva o PDF
+  pdf.save(nomeArquivo);
 }
+
+document.getElementById('btn-gerar-relatorio-pdf').addEventListener('click', () => {
+  // Dados do relatório (exemplo)
+  const vendasFiltradas = db.vendas; // Filtre as vendas conforme necessário
+  const cabecalho = ["Data", "Produto", "Quantidade", "Valor Total"];
+  const dados = vendasFiltradas.map(venda => [
+    formatarData(venda.data),
+    venda.produtoNome,
+    venda.quantidade,
+    formatarMoeda(venda.valorTotal)
+  ]);
+
+  // Gera o PDF
+  gerarRelatorioPDF(dados, cabecalho, 'Relatório de Vendas', 'relatorio_vendas.pdf');
+});
+
