@@ -596,7 +596,8 @@ function gerarRelatorioPDF(dados, cabecalho, titulo, nomeArquivo) {
 }
 
 document.getElementById('btn-gerar-relatorio-pdf').addEventListener('click', () => {
-  // Dados do relatório (exemplo)
+    alert();
+  // Dados do relatório ;(exemplo)
   const vendasFiltradas = db.vendas; // Filtre as vendas conforme necessário
   const cabecalho = ["Data", "Produto", "Quantidade", "Valor Total"];
   const dados = vendasFiltradas.map(venda => [
