@@ -585,3 +585,27 @@ function exportarParaPDF(elementId, nomeArquivo) {
    document.getElementById('btn-exportar-vendas-pdf').addEventListener('click', () => {
      exportarParaPDF('vendas-table', 'relatorio_vendas.pdf');
    });
+
+
+
+
+function exportarParaExcel(dados, cabecalho, nomeArquivo) {
+     // Cria uma planilha
+     const worksheet = XLSX.utils.aoa_to_sheet([cabecalho, ...dados]);
+
+     // Cria um workbook e adiciona a planilha
+     const workbook = XLSX.utils.book_new();
+     XLSX.utils.book_append_sheet(workbook, worksheet, "Relatório");
+
+     // Gera o arquivo Excel
+     XLSX.writeFile(workbook, nomeArquivo);
+   }
+
+   // Exemplo de uso: Exportar relatório de vendas para Excel
+   document.getElementById('btn-exportar-vendas-excel').addEventListener('click', () => {
+     const vendasFiltradas = db.vendas; // Filtre as vendas conforme necessário
+     const cabecalho = ["Data", "Produto", "Quantidade", "Valor Total"];
+     const dados = vendasFiltradas.map(venda => [
+       formatarData(venda.data),
+       venda.produtoNome,
+       venda
