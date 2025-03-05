@@ -565,28 +565,39 @@ document.getElementById('btn-exportar-vendas-csv').addEventListener('click', () 
 
 
 
+
+
+
+
 //pdf
-function exportarParaPDF(elementId, nomeArquivo) {
+
+function exportarParaPDF(elementId, nomeArquivo, orientation = 'p') {
   const element = document.getElementById(elementId);
 
   // Verifica se o elemento existe
   if (!element) {
+    console.error('Elemento não encontrado. Verifique o ID fornecido.');
     alert('Elemento não encontrado. Verifique o ID fornecido.');
     return;
   }
 
+  // Garante que o nome do arquivo termine com .pdf
+  if (!nomeArquivo.endsWith('.pdf')) {
+    nomeArquivo += '.pdf';
+  }
+
   // Configurações do html2canvas
   html2canvas(element, {
-    scale: 2, // Aumenta a qualidade da imagem
-    logging: true, // Habilita logs para depuração
-    useCORS: true, // Permite carregar imagens externas
+    scale: 2,
+    logging: true,
+    useCORS: true,
   }).then((canvas) => {
-    const imgData = canvas.toDataURL('image/png'); // Converte o canvas para imagem PNG
-    const pdf = new jspdf.jsPDF('p', 'mm', 'a4'); // Cria um novo PDF no formato A4
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jspdf.jsPDF(orientation, 'mm', 'a4');
 
     const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth(); // Largura do PDF
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width; // Altura proporcional
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
     // Adiciona a imagem ao PDF
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
