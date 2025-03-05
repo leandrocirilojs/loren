@@ -567,24 +567,32 @@ document.getElementById('btn-exportar-vendas-csv').addEventListener('click', () 
 
 //pdf
 function exportarParaPDF(elementId, nomeArquivo) {
-     const element = document.getElementById(elementId); // Elemento HTML a ser exportado
-     html2canvas(element).then((canvas) => {
-       const imgData = canvas.toDataURL('image/png'); // Converte o elemento em imagem
-       const pdf = new jspdf.jsPDF(); // Cria um novo documento PDF
+  // Carrega o elemento HTML que será exportado
+  const element = document.getElementById(elementId);
 
-       const imgProps = pdf.getImageProperties(imgData);
-       const pdfWidth = pdf.internal.pageSize.getWidth();
-       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  // Configurações do html2canvas
+  html2canvas(element, {
+    scale: 2, // Aumenta a qualidade da imagem
+    logging: true, // Habilita logs para depuração
+    useCORS: true, // Permite carregar imagens externas
+  }).then((canvas) => {
+    const imgData = canvas.toDataURL('image/png'); // Converte o canvas para imagem PNG
+    const pdf = new jspdf.jsPDF('p', 'mm', 'a4'); // Cria um novo PDF no formato A4
 
-       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight); // Adiciona a imagem ao PDF
-       pdf.save(nomeArquivo); // Salva o PDF
-     });
-   }
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth(); // Largura do PDF
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width; // Altura proporcional
 
-   // Exemplo de uso: Exportar tabela de vendas para PDF
-   document.getElementById('btn-exportar-vendas-pdf').addEventListener('click', () => {
-     exportarParaPDF('vendas-table', 'relatorio_vendas.pdf');
-   });
+    // Adiciona a imagem ao PDF
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+    // Salva o PDF
+    pdf.save(nomeArquivo);
+  }).catch((error) => {
+    console.error('Erro ao gerar PDF:', error);
+    alert('Ocorreu um erro ao gerar o PDF. Verifique o console para mais detalhes.');
+  });
+}
 
 
 
