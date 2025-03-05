@@ -569,6 +569,13 @@ document.getElementById('btn-exportar-vendas-csv').addEventListener('click', () 
 function exportarParaPDF(elementId, nomeArquivo) {
   const element = document.getElementById(elementId);
 
+  // Verifica se o elemento existe
+  if (!element) {
+    alert('Elemento não encontrado. Verifique o ID fornecido.');
+    return;
+  }
+
+  // Configurações do html2canvas
   html2canvas(element, {
     scale: 2, // Aumenta a qualidade da imagem
     logging: true, // Habilita logs para depuração
@@ -591,9 +598,3 @@ function exportarParaPDF(elementId, nomeArquivo) {
     alert('Ocorreu um erro ao gerar o PDF. Verifique o console para mais detalhes.');
   });
 }
-
-// Exemplo de uso: Exportar tabela de vendas para PDF
-document.getElementById('btn-exportar-vendas-pdf').addEventListener('click', () => {
-  exportarParaPDF('vendas-table', 'relatorio_vendas.pdf');
-});
-
