@@ -567,10 +567,8 @@ document.getElementById('btn-exportar-vendas-csv').addEventListener('click', () 
 
 //pdf
 function exportarParaPDF(elementId, nomeArquivo) {
-  // Carrega o elemento HTML que será exportado
   const element = document.getElementById(elementId);
 
-  // Configurações do html2canvas
   html2canvas(element, {
     scale: 2, // Aumenta a qualidade da imagem
     logging: true, // Habilita logs para depuração
@@ -594,8 +592,10 @@ function exportarParaPDF(elementId, nomeArquivo) {
   });
 }
 
-
-
+// Exemplo de uso: Exportar tabela de vendas para PDF
+document.getElementById('btn-exportar-vendas-pdf').addEventListener('click', () => {
+  exportarParaPDF('vendas-table', 'relatorio_vendas.pdf');
+});
 
 function exportarParaExcel(dados, cabecalho, nomeArquivo) {
      // Cria uma planilha
