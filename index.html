@@ -1,333 +1,172 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Controle de VER</title>
-  <link rel="stylesheet" href="style.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-      
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loren Bolos e Magias</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <header>
-    <div class="container">
-      <nav>
-        <div class="logo">Venda Fácil</div>
-        <div class="nav-links">
-          <a class="nav-link active" data-module="dashboard">Dashboard</a>
-          <a class="nav-link" data-module="produtos">Produtos</a>
-          <a class="nav-link" data-module="vendas">Vendas</a>
-          <a class="nav-link" data-module="relatorios">Relatórios</a>
-        </div>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <div class="container">
-      <div id="module-container">
-        <!-- Dashboard Module -->
-        <div id="dashboard" class="active">
-          <h2>Dashboard</h2>
-          <div class="grid">
-            <div class="dashboard-card">
-              <h3>Total de Vendas (Hoje)</h3>
-              <div class="dashboard-value" id="vendas-hoje">R$ 0,00</div>
-            </div>
-            <div class="dashboard-card">
-              <h3>Vendas (Mês)</h3>
-              <div class="dashboard-value" id="vendas-mes">R$ 0,00</div>
-            </div>
-            <div class="dashboard-card">
-              <h3>Produtos</h3>
-              <div class="dashboard-value" id="total-produtos">0</div>
-            </div>
-            <div class="dashboard-card">
-              <h3>Estoque Total</h3>
-              <div class="dashboard-value" id="estoque-total">0</div>
-            </div>
-          </div>
-
-          <div class="card mt-4">
-            <h3>Produtos com Estoque Baixo</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Produto</th>
-                  <th>Estoque Atual</th>
-                  <th>Estoque Mínimo</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="low-stock-table">
-                <!-- Produtos com estoque baixo serão adicionados aqui -->
-              </tbody>
-            </table>
-          </div>
-
-
-          
-
-
-
-
-
-
-
-          
-          <div class="card">
-            <h3>Últimas Vendas</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Produto</th>
-                  <th>Quantidade</th>
-                  <th>Valor Total</th>
-                </tr>
-              </thead>
-              <tbody id="ultimas-vendas">
-                <!-- Últimas vendas serão adicionadas aqui -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Produtos Module -->
-        <div id="produtos">
-          <div class="flex-between mb-1">
-            <h2>Gerenciamento de Produtos</h2>
-            <button id="btn-novo-produto">Novo Produto</button>
-          </div>
-
-          <div id="form-produto" class="card" style="display: none;">
-            <h3 id="form-title">Adicionar Produto</h3>
-            <form id="produto-form">
-              <input type="hidden" id="produto-id">
-              <div class="form-group">
-                <label for="nome">Nome do Produto</label>
-                <input type="text" id="nome" required>
-              </div>
-              <div class="form-group">
-                <label for="descricao">Descrição</label>
-                <input type="text" id="descricao">
-              </div>
-              <div class="flex">
-                <div class="form-group" style="flex: 1;">
-                  <label for="preco">Preço (R$)</label>
-                  <input type="number" id="preco" min="0" step="0.01" required>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-magic"></i>
                 </div>
-                <div class="form-group" style="flex: 1;">
-                  <label for="estoque">Estoque Atual</label>
-                  <input type="number" id="estoque" min="0" required>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                  <label for="estoque-minimo">Estoque Mínimo</label>
-                  <input type="number" id="estoque-minimo" min="0" required>
-                </div>
-              </div>
-              <div class="flex">
-                <button type="submit">Salvar</button>
-                <button type="button" id="btn-cancelar-produto" class="btn-danger">Cancelar</button>
-              </div>
-            </form>
-          </div>
-
-          <div class="card">
-            <div class="search-bar">
-              <input type="text" id="busca-produto" placeholder="Buscar produtos...">
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Descrição</th>
-                  <th>Preço</th>
-                  <th>Estoque</th>
-                  <th>Estoque Mínimo</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="produtos-table">
-                <!-- Produtos serão adicionados aqui -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Vendas Module -->
-        <div id="vendas">
-          <h2>Registro de Vendas</h2>
-          <div class="card">
-            <form id="venda-form">
-              <div class="form-group">
-                <label for="produto-venda">Produto</label>
-                <select id="produto-venda" required>
-                  <option value="">Selecione um produto</option>
-                  <!-- Produtos serão adicionados aqui -->
-                </select>
-              </div>
-              <div class="flex">
-                <div class="form-group" style="flex: 1;">
-                  <label for="quantidade-venda">Quantidade</label>
-                  <input type="number" id="quantidade-venda" min="1" value="1" required>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                  <label for="preco-venda">Preço Unitário (R$)</label>
-                  <input type="number" id="preco-venda" min="0" step="0.01" readonly>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                  <label for="total-venda">Total (R$)</label>
-                  <input type="number" id="total-venda" min="0" step="0.01" readonly>
-                </div>
-              </div>
-              <div id="estoque-disponivel-info"></div>
-              <button type="submit">Registrar Venda</button>
-            </form>
-          </div>
-
-          <div class="card">
-            <h3>Histórico de Vendas</h3>
-            <div class="search-bar">
-              <input type="text" id="busca-venda" placeholder="Buscar vendas...">
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Produto</th>
-                  <th>Quantidade</th>
-                  <th>Valor Unitário</th>
-                  <th>Valor Total</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="vendas-table">
-                <!-- Vendas serão adicionadas aqui -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Relatórios Module -->
-        <div id="relatorios">
-          <h2>Relatórios</h2>
-          <div class="card">
-            <div class="tabs">
-              <div class="tab active" data-tab="vendas-periodo">Vendas por Período</div>
-              <div class="tab" data-tab="produtos-vendidos">Produtos Mais Vendidos</div>
-              <div class="tab" data-tab="estoque-atual">Posição de Estoque</div>
+                <h1>Loren <span class="magic-sparkle">Bolos e Magias</span></h1>
             </div>
             
-            <!-- Relatório: Vendas por Período -->
-            <div id="vendas-periodo" class="tab-content active">
-              <div class="flex">
-                <div class="form-group" style="flex: 1;">
-                  <label for="data-inicio">Data Inicial</label>
-                  <input type="date" id="data-inicio">
+            <!-- Menu Bolo Interativo -->
+            <nav class="cake-menu">
+                <div class="cake-base" id="cakeMenu">
+                    <div class="cake-layer" data-layer="1">
+                        <span>Início</span>
+                    </div>
+                    <div class="cake-layer" data-layer="2">
+                        <span>Sobre</span>
+                    </div>
+                    <div class="cake-layer" data-layer="3">
+                        <span>Produtos</span>
+                    </div>
+                    <div class="cake-layer" data-layer="4">
+                        <span>Contato</span>
+                    </div>
+                    <div class="cake-topper">
+                        <i class="fas fa-birthday-cake" id="menuToggle"></i>
+                    </div>
                 </div>
-                <div class="form-group" style="flex: 1;">
-                  <label for="data-fim">Data Final</label>
-                  <input type="date" id="data-fim">
-                </div>
-                <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
-                  <button id="btn-gerar-relatorio-periodo">Gerar Relatório</button>
-                </div>
-              </div>
-              
-              <div id="relatorio-vendas-periodo-resultado">
-                <div class="dashboard-card">
-                  <h3>Total de Vendas no Período</h3>
-                  <div class="dashboard-value" id="total-vendas-periodo">R$ 0,00</div>
-                </div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Data</th>
-                      <th>Produto</th>
-                      <th>Quantidade</th>
-                      <th>Valor Total</th>
-                    </tr>
-                  </thead>
-                  <tbody id="relatorio-vendas-periodo-table">
-                    <!-- Dados do relatório serão adicionados aqui -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            
-            <!-- Relatório: Produtos Mais Vendidos -->
-            <div id="produtos-vendidos" class="tab-content">
-              <div class="flex">
-                <div class="form-group" style="flex: 1;">
-                  <label for="data-inicio-produtos">Data Inicial</label>
-                  <input type="date" id="data-inicio-produtos">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                  <label for="data-fim-produtos">Data Final</label>
-                  <input type="date" id="data-fim-produtos">
-                </div>
-                <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
-                  <button id="btn-gerar-relatorio-produtos">Gerar Relatório</button>
-                </div>
-              </div>
-              
-              <table>
-                <thead>
-                  <tr>
-                    <th>Produto</th>
-                    <th>Quantidade Vendida</th>
-                    <th>Valor Total</th>
-                  </tr>
-                </thead>
-                <tbody id="relatorio-produtos-vendidos-table">
-                  <!-- Dados do relatório serão adicionados aqui -->
-                </tbody>
-              </table>
-            </div>
-            
-            <!-- Relatório: Posição de Estoque -->
-            <div id="estoque-atual" class="tab-content">
-              <button id="btn-gerar-relatorio-estoque" class="mb-1">Atualizar Dados</button>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Produto</th>
-                    <th>Estoque Atual</th>
-                    <th>Estoque Mínimo</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="relatorio-estoque-table">
-                  <!-- Dados do relatório serão adicionados aqui -->
-                </tbody>
-              </table>
-              
-            </div>
-            <button id="btn-exportar-vendas-csv">Exportar Vendas para Excel</button>
-<button id="btn-gerar-relatorio-pdf">Gerar Relatório em PDF</button>
-
-          </div>
+            </nav>
         </div>
-      </div>
-    </div>
-    
-  </main>
+    </header>
 
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <h2>Bolos Mágicos para Momentos Especiais</h2>
+            <p>Transformamos seus momentos em experiências encantadas com nossos bolos artesanais feitos com amor e um toque de magia.</p>
+            <a href="https://wa.me/5511913428903?text=Olá! Gostaria de fazer um pedido de bolo mágico!" class="btn floating" target="_blank">
+                <i class="fab fa-whatsapp"></i> Fazer Pedido
+            </a>
+        </div>
+    </section>
 
-  
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-  const menuIcon = document.getElementById('menu-icon');
-  const navLinks = document.getElementById('nav-links');
+    <!-- Sobre -->
+    <section id="sobre">
+        <div class="container">
+            <h2>Sobre Nós</h2>
+            <div class="sobre">
+                <div class="sobre-img">
+                    <div class="placeholder-img">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                </div>
+                <div class="sobre-text">
+                    <p>Na Loren Bolos e Magias, acreditamos que cada celebração merece um toque especial. Combinamos técnicas tradicionais de confeitaria com ingredientes selecionados para criar bolos que são verdadeiras obras de arte.</p>
+                    <p>Nossa paixão é transformar seus sonhos em realidade, criando bolos personalizados que encantam não apenas pelo sabor, mas também pela apresentação mágica.</p>
+                    <p>Cada bolo é preparado com carinho e atenção aos detalhes, garantindo uma experiência única para você e seus convidados.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  menuIcon.addEventListener('click', function () {
-    navLinks.classList.toggle('active');
-  });
-});
-  </script>
-<script src="script.js"></script>
-      
+    <!-- Produtos -->
+    <section id="produtos" class="produtos">
+        <div class="container">
+            <h2>Nossos Bolos Mágicos</h2>
+            <div class="produtos-grid">
+                <div class="produto-card">
+                    <div class="produto-img">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="produto-info">
+                        <h3>Bolo Real</h3>
+                        <p>Um bolo digno de realeza, com detalhes em pasta americana e recheios surpreendentes.</p>
+                    </div>
+                </div>
+                <div class="produto-card">
+                    <div class="produto-img">
+                        <i class="fas fa-hat-wizard"></i>
+                    </div>
+                    <div class="produto-info">
+                        <h3>Bolo Encantado</h3>
+                        <p>Com elementos surpresa e decoração temática, perfeito para festas com tema de magia.</p>
+                    </div>
+                </div>
+                <div class="produto-card">
+                    <div class="produto-img">
+                        <i class="fas fa-fairy"></i>
+                    </div>
+                    <div class="produto-info">
+                        <h3>Bolo das Fadas</h3>
+                        <p>Delicado e mágico, com cores suaves e detalhes que parecem saídos de um conto de fadas.</p>
+                    </div>
+                </div>
+                <div class="produto-card">
+                    <div class="produto-img">
+                        <i class="fas fa-dragon"></i>
+                    </div>
+                    <div class="produto-info">
+                        <h3>Bolo Épico</h3>
+                        <p>Para os amantes de aventuras, com designs ousados e sabores intensos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contato -->
+    <section id="contato">
+        <div class="container">
+            <h2>Entre em Contato</h2>
+            <div class="contato-grid">
+                <div class="contato-info">
+                    <div class="contato-item">
+                        <i class="fab fa-whatsapp"></i>
+                        <div>
+                            <h3>WhatsApp</h3>
+                            <p>(11) 91342-8903</p>
+                            <a href="https://wa.me/5511913428903?text=Olá! Gostaria de fazer um pedido de bolo mágico!" class="btn" target="_blank">Enviar Mensagem</a>
+                        </div>
+                    </div>
+                    <div class="contato-item">
+                        <i class="fab fa-instagram"></i>
+                        <div>
+                            <h3>Instagram</h3>
+                            <p>@Loren.sweet.cake</p>
+                            <a href="https://instagram.com/Loren.sweet.cake" class="btn" target="_blank">Seguir</a>
+                        </div>
+                    </div>
+                    <div class="contato-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h3>Endereço</h3>
+                            <p>Rua Dr Carlos Aparecido Rabelo de Freitas, 445</p>
+                            <p>Jd Ipanema - Guarulhos, SP</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mapa">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <p>Mapa da Localização</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="https://instagram.com/Loren.sweet.cake" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/5511913428903?text=Olá! Gostaria de fazer um pedido de bolo mágico!" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <p>Loren Bolos e Magias &copy; 2023 - Todos os direitos reservados</p>
+            <p>Rua Dr Carlos Aparecido Rabelo de Freitas, 445 - Jd Ipanema - Guarulhos, SP</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
-  </html>
+</html>
