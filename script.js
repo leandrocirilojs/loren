@@ -60,19 +60,29 @@ function createSprinkles() {
     const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
     const symbols = ['❄️', '✨', '⭐', '💫', '🌟', '🎀'];
     
-    for (let i = 0; i < 15; i++) {
+    // Posição do menu bolo para os confetes
+    const menuRect = cakeMenu.getBoundingClientRect();
+    const menuCenterX = menuRect.left + menuRect.width / 2;
+    const menuCenterY = menuRect.top + menuRect.height / 2;
+    
+    for (let i = 0; i < 12; i++) {
         const sprinkle = document.createElement('div');
         sprinkle.classList.add('sprinkle');
         sprinkle.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
-        sprinkle.style.left = Math.random() * 100 + 'vw';
+        
+        // Posicionar os confetes ao redor do menu
+        sprinkle.style.left = (menuCenterX - 10 + Math.random() * 100 - 50) + 'px';
+        sprinkle.style.top = (menuCenterY - 10 + Math.random() * 100 - 50) + 'px';
         sprinkle.style.animationDelay = Math.random() * 2 + 's';
-        sprinkle.style.fontSize = (Math.random() * 20 + 10) + 'px';
+        sprinkle.style.fontSize = (Math.random() * 15 + 8) + 'px';
         
         document.body.appendChild(sprinkle);
         
         // Remover após animação
         setTimeout(() => {
-            sprinkle.remove();
+            if (sprinkle.parentNode) {
+                sprinkle.remove();
+            }
         }, 2000);
     }
 }
@@ -144,4 +154,11 @@ window.addEventListener('scroll', function() {
     if (hero) {
         hero.style.backgroundPositionY = -(scrolled * 0.5) + 'px';
     }
+});
+
+// Prevenir que o menu feche quando clicar nas camadas
+cakeLayers.forEach(layer => {
+    layer.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
 });
