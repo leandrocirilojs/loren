@@ -66,7 +66,7 @@ p {
 /* Header */
 header {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    padding: 20px 0;
+    padding: 15px 0;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
@@ -82,19 +82,16 @@ header {
 .logo {
     display: flex;
     align-items: center;
+    flex: 1;
 }
 
-.logo-icon {
-    width: 80px;
-    height: 80px;
-    background-color: var(--accent-color);
+.logo-img {
+    height: 70px;
+    width: auto;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2rem;
     margin-right: 15px;
+    object-fit: cover;
+    border: 3px solid var(--accent-color);
 }
 
 .logo h1 {
@@ -111,37 +108,40 @@ header {
 
 .cake-base {
     position: relative;
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     cursor: pointer;
     transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .cake-base.expanded {
-    height: 320px;
+    height: 300px;
 }
 
 .cake-layer {
     position: absolute;
     width: 100%;
-    height: 60px;
-    border-radius: 50px;
+    height: 55px;
+    border-radius: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: bold;
+    font-size: 0.9rem;
     opacity: 0;
     transform: scale(0.8);
     transition: all 0.4s ease;
     cursor: pointer;
     left: 0;
+    text-align: center;
+    padding: 0 10px;
 }
 
 .cake-layer:nth-child(1) { background-color: var(--cake-brown); bottom: 0; }
-.cake-layer:nth-child(2) { background-color: var(--cake-pink); bottom: 20px; }
-.cake-layer:nth-child(3) { background-color: var(--cake-purple); bottom: 40px; }
-.cake-layer:nth-child(4) { background-color: var(--accent-color); bottom: 60px; }
+.cake-layer:nth-child(2) { background-color: var(--cake-pink); bottom: 15px; }
+.cake-layer:nth-child(3) { background-color: var(--cake-purple); bottom: 30px; }
+.cake-layer:nth-child(4) { background-color: var(--accent-color); bottom: 45px; }
 
 .cake-base.expanded .cake-layer {
     opacity: 1;
@@ -149,21 +149,21 @@ header {
 }
 
 .cake-base.expanded .cake-layer:nth-child(1) { bottom: 0; transition-delay: 0.1s; }
-.cake-base.expanded .cake-layer:nth-child(2) { bottom: 70px; transition-delay: 0.2s; }
-.cake-base.expanded .cake-layer:nth-child(3) { bottom: 140px; transition-delay: 0.3s; }
-.cake-base.expanded .cake-layer:nth-child(4) { bottom: 210px; transition-delay: 0.4s; }
+.cake-base.expanded .cake-layer:nth-child(2) { bottom: 65px; transition-delay: 0.2s; }
+.cake-base.expanded .cake-layer:nth-child(3) { bottom: 130px; transition-delay: 0.3s; }
+.cake-base.expanded .cake-layer:nth-child(4) { bottom: 195px; transition-delay: 0.4s; }
 
 .cake-topper {
     position: absolute;
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     background: linear-gradient(135deg, var(--cake-purple), var(--accent-color));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     z-index: 10;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
@@ -335,7 +335,18 @@ footer {
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
-        gap: 20px;
+        gap: 15px;
+    }
+    
+    .logo {
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+    }
+    
+    .logo-img {
+        margin-right: 0;
+        margin-bottom: 10px;
     }
     
     .sobre {
@@ -348,6 +359,39 @@ footer {
     
     .cake-base {
         margin: 0 auto;
+    }
+    
+    .cake-base.expanded {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 1000;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo h1 {
+        font-size: 1.4rem;
+    }
+    
+    .hero h2 {
+        font-size: 1.8rem;
+    }
+    
+    .cake-base {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .cake-topper {
+        width: 60px;
+        height: 60px;
+        font-size: 1.4rem;
+    }
+    
+    .cake-layer {
+        height: 50px;
+        font-size: 0.8rem;
     }
 }
 
@@ -384,4 +428,6 @@ footer {
     position: absolute;
     font-size: 1rem;
     animation: sprinkle 2s linear infinite;
-    }
+    pointer-events: none;
+    z-index: 999;
+}
