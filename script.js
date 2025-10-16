@@ -1,613 +1,147 @@
+// Menu Bolo Interativo
+const cakeMenu = document.getElementById('cakeMenu');
+const menuToggle = document.getElementById('menuToggle');
+const cakeLayers = document.querySelectorAll('.cake-layer');
 
-    // Dados do aplicativo (simulando um banco de dados) usando localstorad
-    let db = {
-      produtos: JSON.parse(localStorage.getItem('produtos')) || [],
-      vendas: JSON.parse(localStorage.getItem('vendas')) || []
-    };
-
-    // Funções utilitárias
-    function salvarDados() {
-      localStorage.setItem('produtos', JSON.stringify(db.produtos));
-      localStorage.setItem('vendas', JSON.stringify(db.vendas));
-    }
-
-    function formatarData(data) {
-      return new Date(data).toLocaleDateString('pt-BR');
-    }
-
-    function formatarMoeda(valor) {
-      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
-
-    function gerarId() {
-      return Date.now().toString(36) + Math.random().toString(36).substring(2);
-    }
-
-    // Navegação entre módulos
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        // Remover classe active de todos os links
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        // Adicionar classe active ao link clicado
-        link.classList.add('active');
-        
-        // Esconder todos os módulos
-        document.querySelectorAll('#module-container > div').forEach(div => div.classList.remove('active'));
-        // Mostrar o módulo correspondente ao link clicado
-        const moduleId = link.getAttribute('data-module');
-        document.getElementById(moduleId).classList.add('active');
-        
-        // Atualizar o conteúdo do módulo
-        if (moduleId === 'dashboard') {
-          atualizarDashboard();
-        } else if (moduleId === 'produtos') {
-          listarProdutos();
-        } else if (moduleId === 'vendas') {
-          atualizarSelectProdutos();
-          listarVendas();
-        }
-      });
-    });
-
-    // Navegação entre tabs nos relatórios
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        // Remover classe active de todas as tabs
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        // Adicionar classe active à tab clicada
-        tab.classList.add('active');
-        
-        // Esconder todos os conteúdos de tab
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        // Mostrar o conteúdo correspondente à tab clicada
-        const tabId = tab.getAttribute('data-tab');
-        document.getElementById(tabId).classList.add('active');
-      });
-    });
-
-    // ======= Módulo de Produtos =======
+// Alternar expansão do menu
+menuToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    cakeMenu.classList.toggle('expanded');
     
-    // Exibir/esconder formulário de produto
-    document.getElementById('btn-novo-produto').addEventListener('click', () => {
-      document.getElementById('form-title').textContent = 'Adicionar Produto';
-      document.getElementById('produto-form').reset();
-      document.getElementById('produto-id').value = '';
-      document.getElementById('form-produto').style.display = 'block';
-    });
-
-    document.getElementById('btn-cancelar-produto').addEventListener('click', () => {
-      document.getElementById('form-produto').style.display = 'none';
-    });
-
-    // Adicionar/editar produto
-    document.getElementById('produto-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const id = document.getElementById('produto-id').value;
-      const produto = {
-        id: id || gerarId(),
-        nome: document.getElementById('nome').value,
-        descricao: document.getElementById('descricao').value,
-        preco: parseFloat(document.getElementById('preco').value),
-        estoque: parseInt(document.getElementById('estoque').value),
-        estoqueMinimo: parseInt(document.getElementById('estoque-minimo').value)
-      };
-      
-      if (id) {
-        // Editando produto existente
-        const index = db.produtos.findIndex(p => p.id === id);
-        if (index !== -1) {
-          db.produtos[index] = produto;
-        }
-      } else {
-        // Adicionando novo produto
-        db.produtos.push(produto);
-      }
-      
-      salvarDados();
-      listarProdutos();
-      document.getElementById('form-produto').style.display = 'none';
-      
-      // Atualizar select de produtos no módulo de vendas
-      atualizarSelectProdutos();
-      // Atualizar dashboard
-      atualizarDashboard();
-    });
-
-    // Listar produtos
-    function listarProdutos() {
-      const tbody = document.getElementById('produtos-table');
-      tbody.innerHTML = '';
-      
-      db.produtos.forEach(produto => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${produto.nome}</td>
-          <td>${produto.descricao}</td>
-          <td>${formatarMoeda(produto.preco)}</td>
-          <td>${produto.estoque}</td>
-          <td>${produto.estoqueMinimo}</td>
-          <td class="actions">
-            <button class="btn-small" onclick="editarProduto('${produto.id}')">Editar</button>
-            <button class="btn-small btn-danger" onclick="excluirProduto('${produto.id}')">Excluir</button>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
+    // Adicionar efeito de confete ao expandir
+    if (cakeMenu.classList.contains('expanded')) {
+        createSprinkles();
     }
+});
 
-    // Editar produto
-    window.editarProduto = function(id) {
-      const produto = db.produtos.find(p => p.id === id);
-      if (produto) {
-        document.getElementById('produto-id').value = produto.id;
-        document.getElementById('nome').value = produto.nome;
-        document.getElementById('descricao').value = produto.descricao;
-        document.getElementById('preco').value = produto.preco;
-        document.getElementById('estoque').value = produto.estoque;
-        document.getElementById('estoque-minimo').value = produto.estoqueMinimo;
+// Fechar menu ao clicar fora
+document.addEventListener('click', function(e) {
+    if (!cakeMenu.contains(e.target)) {
+        cakeMenu.classList.remove('expanded');
+    }
+});
+
+// Navegação suave para as seções
+cakeLayers.forEach(layer => {
+    layer.addEventListener('click', function() {
+        const layerNumber = this.getAttribute('data-layer');
+        let targetSection;
         
-        document.getElementById('form-title').textContent = 'Editar Produto';
-        document.getElementById('form-produto').style.display = 'block';
-      }
-    };
-
-    // Excluir produto
-    window.excluirProduto = function(id) {
-      if (confirm('Tem certeza que deseja excluir este produto?')) {
-        db.produtos = db.produtos.filter(p => p.id !== id);
-        salvarDados();
-        listarProdutos();
-        atualizarDashboard();
-      }
-    };
-
-    // Buscar produtos
-    document.getElementById('busca-produto').addEventListener('input', (e) => {
-      const busca = e.target.value.toLowerCase();
-      const rows = document.querySelectorAll('#produtos-table tr');
-      
-      rows.forEach(row => {
-        const nome = row.cells[0].textContent.toLowerCase();
-        const descricao = row.cells[1].textContent.toLowerCase();
-        
-        if (nome.includes(busca) || descricao.includes(busca)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
+        switch(layerNumber) {
+            case '1':
+                targetSection = 'home';
+                break;
+            case '2':
+                targetSection = 'sobre';
+                break;
+            case '3':
+                targetSection = 'produtos';
+                break;
+            case '4':
+                targetSection = 'contato';
+                break;
         }
-      });
+        
+        const targetElement = document.getElementById(targetSection);
+        if (targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop - 80,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Fechar menu após clicar
+        cakeMenu.classList.remove('expanded');
     });
+});
 
-    // ======= Módulo de Vendas =======
+// Efeito de confete mágico
+function createSprinkles() {
+    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+    const symbols = ['❄️', '✨', '⭐', '💫', '🌟', '🎀'];
     
-    // Atualizar select de produtos
-    function atualizarSelectProdutos() {
-      const select = document.getElementById('produto-venda');
-      select.innerHTML = '<option value="">Selecione um produto</option>';
-      
-      db.produtos.forEach(produto => {
-        const option = document.createElement('option');
-        option.value = produto.id;
-        option.textContent = `${produto.nome} - ${formatarMoeda(produto.preco)}`;
-        select.appendChild(option);
-      });
+    for (let i = 0; i < 15; i++) {
+        const sprinkle = document.createElement('div');
+        sprinkle.classList.add('sprinkle');
+        sprinkle.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+        sprinkle.style.left = Math.random() * 100 + 'vw';
+        sprinkle.style.animationDelay = Math.random() * 2 + 's';
+        sprinkle.style.fontSize = (Math.random() * 20 + 10) + 'px';
+        
+        document.body.appendChild(sprinkle);
+        
+        // Remover após animação
+        setTimeout(() => {
+            sprinkle.remove();
+        }, 2000);
     }
-
-    // Atualizar preço e total ao selecionar produto
-    document.getElementById('produto-venda').addEventListener('change', () => {
-      const produtoId = document.getElementById('produto-venda').value;
-      const quantidade = parseInt(document.getElementById('quantidade-venda').value) || 0;
-      
-      if (produtoId) {
-        const produto = db.produtos.find(p => p.id === produtoId);
-        if (produto) {
-          document.getElementById('preco-venda').value = produto.preco;
-          document.getElementById('total-venda').value = produto.preco * quantidade;
-          
-          // Mostrar informação de estoque disponível
-          const estoqueInfo = document.getElementById('estoque-disponivel-info');
-          estoqueInfo.textContent = `Estoque disponível: ${produto.estoque} unidades`;
-          
-          if (produto.estoque < 5) {
-            estoqueInfo.style.color = 'red';
-          } else {
-            estoqueInfo.style.color = 'green';
-          }
-        }
-      } else {
-        document.getElementById('preco-venda').value = '';
-        document.getElementById('total-venda').value = '';
-        document.getElementById('estoque-disponivel-info').textContent = '';
-      }
-    });
-
-    // Atualizar total ao alterar quantidade
-    document.getElementById('quantidade-venda').addEventListener('input', () => {
-      const produtoId = document.getElementById('produto-venda').value;
-      const quantidade = parseInt(document.getElementById('quantidade-venda').value) || 0;
-      
-      if (produtoId) {
-        const produto = db.produtos.find(p => p.id === produtoId);
-        if (produto) {
-          document.getElementById('total-venda').value = produto.preco * quantidade;
-        }
-      }
-    });
-
-    // Registrar venda
-    document.getElementById('venda-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const produtoId = document.getElementById('produto-venda').value;
-      const quantidade = parseInt(document.getElementById('quantidade-venda').value);
-      
-      if (!produtoId) {
-        alert('Selecione um produto.');
-        return;
-      }
-      
-      const produto = db.produtos.find(p => p.id === produtoId);
-      
-      if (!produto) {
-        alert('Produto não encontrado.');
-        return;
-      }
-      
-      if (quantidade <= 0) {
-        alert('A quantidade deve ser maior que zero.');
-        return;
-      }
-      
-      if (quantidade > produto.estoque) {
-        alert('Quantidade indisponível em estoque.');
-        return;
-      }
-      
-      // Atualizar estoque
-      produto.estoque -= quantidade;
-      
-      // Registrar venda
-      const venda = {
-        id: gerarId(),
-        data: new Date().toISOString(),
-        produtoId: produto.id,
-        produtoNome: produto.nome,
-        quantidade: quantidade,
-        valorUnitario: produto.preco,
-        valorTotal: produto.preco * quantidade
-      };
-      
-      db.vendas.push(venda);
-      salvarDados();
-      
-      // Limpar formulário
-      document.getElementById('venda-form').reset();
-      document.getElementById('preco-venda').value = '';
-      document.getElementById('total-venda').value = '';
-      document.getElementById('estoque-disponivel-info').textContent = '';
-      
-      // Atualizar tabela de vendas
-      listarVendas();
-      
-      // Atualizar dashboard
-      atualizarDashboard();
-      
-      alert('Venda registrada com sucesso!');
-    });
-
-    // Listar vendas
-    function listarVendas() {
-      const tbody = document.getElementById('vendas-table');
-      tbody.innerHTML = '';
-      
-      // Ordenar vendas por data (mais recentes primeiro)
-      const vendasOrdenadas = [...db.vendas].sort((a, b) => new Date(b.data) - new Date(a.data));
-      
-      vendasOrdenadas.forEach(venda => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${formatarData(venda.data)}</td>
-          <td>${venda.produtoNome}</td>
-          <td>${venda.quantidade}</td>
-      <td>${formatarMoeda(venda.valorUnitario)}</td>
-      <td>${formatarMoeda(venda.valorTotal)}</td>
-      <td class="actions">
-        <button class="btn-small btn-danger" onclick="excluirVenda('${venda.id}')">Excluir</button>
-      </td>
-    `;
-    tbody.appendChild(row);
-  });
 }
 
-// Excluir venda
-window.excluirVenda = function(id) {
-  if (confirm('Tem certeza que deseja excluir esta venda?')) {
-    const venda = db.vendas.find(v => v.id === id);
-    if (venda) {
-      // Restaurar estoque do produto
-      const produto = db.produtos.find(p => p.id === venda.produtoId);
-      if (produto) {
-        produto.estoque += venda.quantidade;
-      }
-      
-      // Remover venda
-      db.vendas = db.vendas.filter(v => v.id !== id);
-      salvarDados();
-      listarVendas();
-      atualizarDashboard();
-    }
-  }
+// Efeito de destaque nos cards de produtos
+const productCards = document.querySelectorAll('.produto-card');
+
+productCards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-10px)';
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0)';
+    });
+});
+
+// Animação de entrada para as seções
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
 };
 
-// Buscar vendas
-document.getElementById('busca-venda').addEventListener('input', (e) => {
-  const busca = e.target.value.toLowerCase();
-  const rows = document.querySelectorAll('#vendas-table tr');
-  
-  rows.forEach(row => {
-    const produtoNome = row.cells[1].textContent.toLowerCase();
-    const data = row.cells[0].textContent.toLowerCase();
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('section').forEach(section => {
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(20px)';
+    section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(section);
+});
+
+// Efeito de digitação no título hero
+function typeWriter(element, text, speed = 100) {
+    let i = 0;
+    element.innerHTML = '';
     
-    if (produtoNome.includes(busca) || data.includes(busca)) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
-    }
-  });
-});
-
-// ======= Módulo de Relatórios =======
-
-// Gerar relatório de vendas por período
-document.getElementById('btn-gerar-relatorio-periodo').addEventListener('click', () => {
-  const dataInicio = document.getElementById('data-inicio').value;
-  const dataFim = document.getElementById('data-fim').value;
-  
-  if (!dataInicio || !dataFim) {
-    alert('Selecione um período válido.');
-    return;
-  }
-  
-  const vendasFiltradas = db.vendas.filter(venda => {
-    const dataVenda = new Date(venda.data).toISOString().split('T')[0];
-    return dataVenda >= dataInicio && dataVenda <= dataFim;
-  });
-  
-  const totalVendasPeriodo = vendasFiltradas.reduce((total, venda) => total + venda.valorTotal, 0);
-  
-  document.getElementById('total-vendas-periodo').textContent = formatarMoeda(totalVendasPeriodo);
-  
-  const tbody = document.getElementById('relatorio-vendas-periodo-table');
-  tbody.innerHTML = '';
-  
-  vendasFiltradas.forEach(venda => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${formatarData(venda.data)}</td>
-      <td>${venda.produtoNome}</td>
-      <td>${venda.quantidade}</td>
-      <td>${formatarMoeda(venda.valorTotal)}</td>
-    `;
-    tbody.appendChild(row);
-  });
-});
-
-// Gerar relatório de produtos mais vendidos
-document.getElementById('btn-gerar-relatorio-produtos').addEventListener('click', () => {
-  const dataInicio = document.getElementById('data-inicio-produtos').value;
-  const dataFim = document.getElementById('data-fim-produtos').value;
-  
-  if (!dataInicio || !dataFim) {
-    alert('Selecione um período válido.');
-    return;
-  }
-  
-  const vendasFiltradas = db.vendas.filter(venda => {
-    const dataVenda = new Date(venda.data).toISOString().split('T')[0];
-    return dataVenda >= dataInicio && dataVenda <= dataFim;
-  });
-  
-  const produtosVendidos = {};
-  
-  vendasFiltradas.forEach(venda => {
-    if (!produtosVendidos[venda.produtoId]) {
-      produtosVendidos[venda.produtoId] = {
-        nome: venda.produtoNome,
-        quantidade: 0,
-        valorTotal: 0
-      };
+    function type() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        }
     }
     
-    produtosVendidos[venda.produtoId].quantidade += venda.quantidade;
-    produtosVendidos[venda.produtoId].valorTotal += venda.valorTotal;
-  });
-  
-  const produtosOrdenados = Object.values(produtosVendidos).sort((a, b) => b.quantidade - a.quantidade);
-  
-  const tbody = document.getElementById('relatorio-produtos-vendidos-table');
-  tbody.innerHTML = '';
-  
-  produtosOrdenados.forEach(produto => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${produto.nome}</td>
-      <td>${produto.quantidade}</td>
-      <td>${formatarMoeda(produto.valorTotal)}</td>
-    `;
-    tbody.appendChild(row);
-  });
-});
-
-// Gerar relatório de posição de estoque
-document.getElementById('btn-gerar-relatorio-estoque').addEventListener('click', () => {
-  const tbody = document.getElementById('relatorio-estoque-table');
-  tbody.innerHTML = '';
-  
-  db.produtos.forEach(produto => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${produto.nome}</td>
-      <td>${produto.estoque}</td>
-      <td>${produto.estoqueMinimo}</td>
-      <td>${produto.estoque < produto.estoqueMinimo ? 'Estoque Baixo' : 'OK'}</td>
-    `;
-    tbody.appendChild(row);
-  });
-});
-
-// ======= Módulo de Dashboard =======
-
-function atualizarDashboard() {
-  // Total de vendas hoje
-  const hoje = new Date().toISOString().split('T')[0];
-  const vendasHoje = db.vendas.filter(venda => venda.data.split('T')[0] === hoje);
-  const totalVendasHoje = vendasHoje.reduce((total, venda) => total + venda.valorTotal, 0);
-  document.getElementById('vendas-hoje').textContent = formatarMoeda(totalVendasHoje);
-  
-  // Total de vendas no mês
-  const mesAtual = new Date().getMonth();
-  const anoAtual = new Date().getFullYear();
-  const vendasMes = db.vendas.filter(venda => {
-    const dataVenda = new Date(venda.data);
-    return dataVenda.getMonth() === mesAtual && dataVenda.getFullYear() === anoAtual;
-  });
-  const totalVendasMes = vendasMes.reduce((total, venda) => total + venda.valorTotal, 0);
-  document.getElementById('vendas-mes').textContent = formatarMoeda(totalVendasMes);
-  
-  // Total de produtos
-  document.getElementById('total-produtos').textContent = db.produtos.length;
-  
-  // Estoque total
-  const estoqueTotal = db.produtos.reduce((total, produto) => total + produto.estoque, 0);
-  document.getElementById('estoque-total').textContent = estoqueTotal;
-  
-  // Produtos com estoque baixo
-  const tbody = document.getElementById('low-stock-table');
-  tbody.innerHTML = '';
-  
-  db.produtos.filter(produto => produto.estoque < produto.estoqueMinimo).forEach(produto => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${produto.nome}</td>
-      <td>${produto.estoque}</td>
-      <td>${produto.estoqueMinimo}</td>
-      <td class="actions">
-        <button class="btn-small" onclick="editarProduto('${produto.id}')">Editar</button>
-      </td>
-    `;
-    tbody.appendChild(row);
-  });
-  
-  // Últimas vendas
-  const ultimasVendas = db.vendas.slice(-5).reverse();
-  const tbodyVendas = document.getElementById('ultimas-vendas');
-  tbodyVendas.innerHTML = '';
-  
-  ultimasVendas.forEach(venda => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${formatarData(venda.data)}</td>
-      <td>${venda.produtoNome}</td>
-      <td>${venda.quantidade}</td>
-      <td>${formatarMoeda(venda.valorTotal)}</td>
-    `;
-    tbodyVendas.appendChild(row);
-  });
+    type();
 }
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-  atualizarDashboard();
-  listarProdutos();
-  atualizarSelectProdutos();
-  listarVendas();
+// Iniciar efeito de digitação quando a página carregar
+window.addEventListener('load', function() {
+    const heroTitle = document.querySelector('.hero h2');
+    if (heroTitle) {
+        const originalText = heroTitle.textContent;
+        typeWriter(heroTitle, originalText, 80);
+    }
 });
 
-
-
-
-
-
-
-
-
-
-function exportarParaCSV(dados, cabecalho, nomeArquivo) {
-  // Cria o conteúdo CSV
-  const csvContent = "data:text/csv;charset=utf-8," 
-    + cabecalho.join(",") + "\n" // Adiciona o cabeçalho
-    + dados.map(row => row.join(",")).join("\n"); // Adiciona as linhas de dados
-
-  // Cria um link para download
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", nomeArquivo);
-  document.body.appendChild(link);
-  link.click(); // Dispara o download
-  document.body.removeChild(link); // Remove o link após o download
-}
-
-// Exemplo de uso: Exportar relatório de vendas
-document.getElementById('btn-exportar-vendas-csv').addEventListener('click', () => {
-  const vendasFiltradas = db.vendas; // Filtre as vendas conforme necessário
-  const cabecalho = ["Data", "Produto", "Quantidade", "Valor Total"];
-  const dados = vendasFiltradas.map(venda => [
-    formatarData(venda.data),
-    venda.produtoNome,
-    venda.quantidade,
-    formatarMoeda(venda.valorTotal)
-  ]);
-
-  exportarParaCSV(dados, cabecalho, 'relatorio_vendas.csv');
+// Efeito de parallax suave no hero
+window.addEventListener('scroll', function() {
+    const scrolled = window.pageYOffset;
+    const hero = document.querySelector('.hero');
+    if (hero) {
+        hero.style.backgroundPositionY = -(scrolled * 0.5) + 'px';
+    }
 });
-
-
-
-
-
-
-
-//pdf
-
-function gerarRelatorioPDF(dados, cabecalho, titulo, nomeArquivo) {
-  const pdf = new jspdf.jsPDF('p', 'mm', 'a4'); // Cria um novo PDF no formato A4
-
-  // Adiciona o título ao PDF
-  pdf.setFontSize(18);
-  pdf.text(titulo, 10, 20);
-
-  // Adiciona a tabela ao PDF
-  pdf.setFontSize(12);
-  pdf.autoTable({
-    head: [cabecalho], // Cabeçalho da tabela
-    body: dados, // Dados da tabela
-    startY: 30, // Posição inicial da tabela
-    theme: 'striped', // Estilo da tabela
-    styles: {
-      fontSize: 10, // Tamanho da fonte
-      cellPadding: 3, // Espaçamento interno das células
-    },
-  });
-
-  // Salva o PDF
-  pdf.save(nomeArquivo);
-}
-
-document.getElementById('btn-gerar-relatorio-pdf').addEventListener('click', () => {
-    
-  // Dados do relatório ;(exemplo)
-  const vendasFiltradas = db.vendas; // Filtre as vendas conforme necessário
-  const cabecalho = ["Data", "Produto", "Quantidade", "Valor Total"];
-  const dados = vendasFiltradas.map(venda => [
-    formatarData(venda.data),
-    venda.produtoNome,
-    venda.quantidade,
-    formatarMoeda(venda.valorTotal)
-  ]);
-
-  // Gera o PDF
-  gerarRelatorioPDF(dados, cabecalho, 'Relatório de Vendas', 'relatorio_vendas.pdf');
-});
-
