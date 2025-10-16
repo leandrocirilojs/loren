@@ -334,6 +334,9 @@ footer {
 }
 
 /* Responsividade */
+    /* ... (mantenha todo o CSS anterior até a parte responsiva) ... */
+
+/* Responsividade */
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
@@ -359,14 +362,16 @@ footer {
         font-size: 2rem;
     }
     
+    /* CORREÇÃO: Remover o reposicionamento do menu bolo */
     .cake-base {
-        margin: 0 auto;
+        margin: 0;
     }
     
+    /* CORREÇÃO: Manter o menu na posição original quando expandido */
     .cake-base.expanded {
-        position: fixed;
-        top: 100px;
-        right: 20px;
+        position: relative;
+        top: auto;
+        right: auto;
         z-index: 1000;
     }
 }
@@ -395,41 +400,41 @@ footer {
         height: 50px;
         font-size: 0.8rem;
     }
+    
+    /* CORREÇÃO: Ajustar altura do menu expandido para mobile */
+    .cake-base.expanded {
+        height: 280px;
+    }
+    
+    .cake-base.expanded .cake-layer:nth-child(1) { bottom: 0; }
+    .cake-base.expanded .cake-layer:nth-child(2) { bottom: 60px; }
+    .cake-base.expanded .cake-layer:nth-child(3) { bottom: 120px; }
+    .cake-base.expanded .cake-layer:nth-child(4) { bottom: 180px; }
 }
 
-/* Animações */
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
+/* ... (mantenha o resto do CSS anterior) ... */
+
+
+
+
+
+
+
+/* Melhoria para mobile - garantir que o menu expandido não sobreponha outros elementos */
+@media (max-width: 768px) {
+    .cake-menu {
+        order: -1; /* Coloca o menu primeiro no mobile */
+        margin-bottom: 10px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .cake-base.expanded {
+        margin-bottom: 250px; /* Espaço para o menu expandido */
+    }
 }
 
-.floating {
-    animation: float 5s ease-in-out infinite;
-}
-
-.magic-sparkle {
-    position: relative;
-}
-
-.magic-sparkle::after {
-    content: "✨";
-    position: absolute;
-    top: -10px;
-    right: -15px;
-    font-size: 1.5rem;
-}
-
-@keyframes sprinkle {
-    0% { transform: translateY(-10px) rotate(0deg); opacity: 0; }
-    50% { opacity: 1; }
-    100% { transform: translateY(10px) rotate(360deg); opacity: 0; }
-}
-
-.sprinkle {
-    position: absolute;
-    font-size: 1rem;
-    animation: sprinkle 2s linear infinite;
-    pointer-events: none;
-    z-index: 999;
-}
