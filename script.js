@@ -56,25 +56,33 @@ cakeLayers.forEach(layer => {
 });
 
 // Efeito de confete mágico
+// ... (mantenha o JavaScript anterior) ...
+
+// Efeito de confete mágico - CORREÇÃO PARA POSIÇÃO
 function createSprinkles() {
     const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
     const symbols = ['❄️', '✨', '⭐', '💫', '🌟', '🎀'];
     
-    // Posição do menu bolo para os confetes
+    // Posição do menu bolo para os confetes - CORREÇÃO
     const menuRect = cakeMenu.getBoundingClientRect();
-    const menuCenterX = menuRect.left + menuRect.width / 2;
-    const menuCenterY = menuRect.top + menuRect.height / 2;
+    const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+    
+    const menuCenterX = menuRect.left + menuRect.width / 2 + scrollX;
+    const menuCenterY = menuRect.top + menuRect.height / 2 + scrollY;
     
     for (let i = 0; i < 12; i++) {
         const sprinkle = document.createElement('div');
         sprinkle.classList.add('sprinkle');
         sprinkle.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
         
-        // Posicionar os confetes ao redor do menu
+        // Posicionar os confetes ao redor do menu - CORREÇÃO
+        sprinkle.style.position = 'fixed';
         sprinkle.style.left = (menuCenterX - 10 + Math.random() * 100 - 50) + 'px';
         sprinkle.style.top = (menuCenterY - 10 + Math.random() * 100 - 50) + 'px';
         sprinkle.style.animationDelay = Math.random() * 2 + 's';
         sprinkle.style.fontSize = (Math.random() * 15 + 8) + 'px';
+        sprinkle.style.zIndex = '1000';
         
         document.body.appendChild(sprinkle);
         
@@ -86,6 +94,8 @@ function createSprinkles() {
         }, 2000);
     }
 }
+
+// ... (mantenha o resto do JavaScript anterior) ...
 
 // Efeito de destaque nos cards de produtos
 const productCards = document.querySelectorAll('.produto-card');
