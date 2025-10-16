@@ -102,7 +102,9 @@ header {
 
 /* Menu Bolo Interativo */
 .cake-menu {
-    position: relative;
+    position: fixed;
+    right: 0px;
+    top: 10px;
     z-index: 1000;
 }
 
