@@ -267,7 +267,8 @@ header {
 
 /* Estilos para a imagem do cardápio */
 .menu-image {
-    max-width: 100%;
+    width:80%;
+    max-width: 80%;
     height: auto;
     display: block;
     margin: 30px auto;
